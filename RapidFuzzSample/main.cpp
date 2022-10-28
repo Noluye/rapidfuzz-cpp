@@ -11,7 +11,8 @@ std::vector<std::pair<Sentence2, double>> extract(const Sentence1& query, const 
 {
 	std::vector<std::pair<Sentence2, double>> results;
 
-	rapidfuzz::fuzz::CachedRatio<typename Sentence1::value_type> scorer(query);
+	//rapidfuzz::fuzz::CachedRatio<typename Sentence1::value_type> scorer(query);
+	rapidfuzz::fuzz::CachedPartialRatio<typename Sentence1::value_type> scorer(query);
 
 	for (const auto& choice : choices) {
 		double score = scorer.similarity(choice, score_cutoff);
@@ -56,6 +57,7 @@ void Test1()
 	std::string a = "hello world";
 	std::string b = "hello world!";
 	std::cout << rapidfuzz::fuzz::ratio(a, b) << std::endl;
+	std::cout << rapidfuzz::fuzz::partial_ratio(a, b) << std::endl;
 }
 
 
@@ -77,6 +79,7 @@ std::string wstring2string(std::wstring wstr)
 
 void Test2()
 {
+	std::cout << "===================================================" << std::endl;
 	std::wstring query = L"今天天气真好";
 	std::vector<std::wstring> choices = {L"天气", L"你好", L"介绍自己"};
 
@@ -86,9 +89,22 @@ void Test2()
 		std::cout << wstring2string(answer.first) << ": " << answer.second << std::endl;
 	}
 }
-
 void Test3()
 {
+	std::cout << "===================================================" << std::endl;
+	std::string query = "今天天气真好";
+	std::vector<std::string> choices = { "天气", "你好", "介绍自己" };
+
+	auto answers = extract(query, choices);
+	for (auto& answer : answers)
+	{
+		std::cout << answer.first << ": " << answer.second << std::endl;
+	}
+}
+
+void Test4()
+{
+	std::cout << "===================================================" << std::endl;
 	std::string query = "今天天气真好";
 	std::vector<std::string> choices = { "天气", "你好", "介绍自己" };
 
@@ -106,4 +122,5 @@ int main()
 	Test1();
 	Test2();
 	Test3();
+	Test4();
 }
